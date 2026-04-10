@@ -6,7 +6,7 @@
 -- =========================================================
 -- 1) CREAR BASE DE DATOS
 -- =========================================================
-CREATE DATABASE siswork_db WITH OWNER = postgres ENCODING = 'UTF8' TEMPLATE = template0;
+-- CREATE DATABASE siswork_db WITH OWNER = postgres ENCODING = 'UTF8' TEMPLATE = template0;
 -- =========================================================
 -- 2) CONECTARSE A LA NUEVA BASE
 -- En psql o pgAdmin Query Tool ejecutar esta línea aparte

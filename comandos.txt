@@ -1,0 +1,5 @@
+uvicorn app.main:app --reload  //para ejecutar el main.py
+
+python3 -m venv venv
+source venv/bin/activate // activar entorno de python
+
