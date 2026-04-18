@@ -1,0 +1,9 @@
+# --- Python (Modelado y Digital Twins) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+.env
+.ipynb_checkpoints/
