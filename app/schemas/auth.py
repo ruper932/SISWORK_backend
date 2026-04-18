@@ -28,6 +28,10 @@ class VerifyTwoFactorRequest(BaseModel):
     challenge_token: str
     code: str = Field(min_length=6, max_length=6)
 
+
+class TwoFactorConfirmRequest(BaseModel):
+    code: str = Field(..., min_length=6, max_length=10)
+    
 class TwoFactorSetupResponse(BaseModel):
     secret: str
     otpauth_uri: str
