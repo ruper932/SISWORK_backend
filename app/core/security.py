@@ -59,11 +59,10 @@ def build_totp_uri(email: str, secret: str) -> str:
     totp = pyotp.TOTP(secret)
     return totp.provisioning_uri(name=email, issuer_name=settings.totp_issuer)
 
-
 def verify_totp_code(secret: str, code: str) -> bool:
+    clean_code = str(code).strip().replace(" ", "")
     totp = pyotp.TOTP(secret)
-    return totp.verify(code, valid_window=1)
-
+    return totp.verify(clean_code, valid_window=1)
 
 
 def generate_backup_codes(count: int = 8) -> list[str]:

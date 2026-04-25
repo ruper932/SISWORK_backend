@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-
+from app.models.enums import UserStatus
 from fastapi import HTTPException, status
 from jose import JWTError
 
@@ -61,7 +61,7 @@ class AuthService:
                 detail="Invalid credentials",
             )
 
-        if user.status.value != "active" or not user.is_active:
+        if user.status != UserStatus.ACTIVE or not user.is_active:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User is not active",
@@ -131,6 +131,14 @@ class AuthService:
                 "otpauth_uri": build_totp_uri(current_user.email, current_user.two_factor.secret),
                 "backup_codes": [],
                 "already_enabled": True,
+            }
+
+        if current_user.two_factor and current_user.two_factor.secret and not current_user.two_factor.is_enabled:
+            return {
+                "secret": current_user.two_factor.secret,
+                "otpauth_uri": build_totp_uri(current_user.email, current_user.two_factor.secret),
+                "backup_codes": [],
+                "already_enabled": False,
             }
 
         secret = generate_totp_secret()
