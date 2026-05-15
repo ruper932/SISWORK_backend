@@ -1,22 +1,105 @@
-import enum
+from enum import Enum
 
 
-class UserRole(str, enum.Enum):
+class UserRole(str, Enum):
     CLIENT = "CLIENT"
     PROFESSIONAL = "PROFESSIONAL"
     ADMIN = "ADMIN"
     SUPPORT = "SUPPORT"
 
 
-class UserStatus(str, enum.Enum):
+class UserStatus(str, Enum):
     ACTIVE = "ACTIVE"
     SUSPENDED = "SUSPENDED"
     BLOCKED = "BLOCKED"
     DELETED = "DELETED"
 
 
-class UserGender(str, enum.Enum):
+class UserGender(str, Enum):
     MALE = "MALE"
     FEMALE = "FEMALE"
     OTHER = "OTHER"
-    PREFER_NOT_TO_SAY = "PREFER_NOT_TO_SAY"
+    PREFERNOTTOSAY = "PREFERNOTTOSAY"
+
+
+class VerificationStatus(str, Enum):
+    PENDING = "PENDING"
+    INREVIEW = "INREVIEW"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+
+
+class SpecialtyLevel(str, Enum):
+    BASIC = "BASIC"
+    INTERMEDIATE = "INTERMEDIATE"
+    ADVANCED = "ADVANCED"
+    EXPERT = "EXPERT"
+
+
+class Weekday(str, Enum):
+    MONDAY = "MONDAY"
+    TUESDAY = "TUESDAY"
+    WEDNESDAY = "WEDNESDAY"
+    THURSDAY = "THURSDAY"
+    FRIDAY = "FRIDAY"
+    SATURDAY = "SATURDAY"
+    SUNDAY = "SUNDAY"
+
+
+class DocumentType(str, Enum):
+    CI = "CI"
+    CERTIFICATE = "CERTIFICATE"
+    LICENSE = "LICENSE"
+    BACKGROUNDCHECK = "BACKGROUNDCHECK"
+    OTHER = "OTHER"
+
+
+class ServiceRequestStatus(str, Enum):
+    OPEN = "OPEN"
+    INPROGRESS = "INPROGRESS"
+    ASSIGNED = "ASSIGNED"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
+
+
+class ContactChannel(str, Enum):
+    WHATSAPP = "WHATSAPP"
+    PHONE = "PHONE"
+    INTERNALCHAT = "INTERNALCHAT"
+    OTHER = "OTHER"
+
+
+class ApplicationStatus(str, Enum):
+    PENDING = "PENDING"
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"
+    CANCELLED = "CANCELLED"
+
+
+class ReportType(str, Enum):
+    USERS = "USERS"
+    PROFESSIONALS = "PROFESSIONALS"
+    REQUESTS = "REQUESTS"
+    RATINGS = "RATINGS"
+    SPECIALTIES = "SPECIALTIES"
+    VALIDATIONS = "VALIDATIONS"
+    DASHBOARD = "DASHBOARD"
+
+
+class AuditAction(str, Enum):
+    LOGIN = "LOGIN"
+    LOGOUT = "LOGOUT"
+    REGISTER = "REGISTER"
+    EDITPROFILE = "EDITPROFILE"
+    CREATEREQUEST = "CREATEREQUEST"
+    EDITREQUEST = "EDITREQUEST"
+    DELETEREQUEST = "DELETEREQUEST"
+    APPLYTOREQUEST = "APPLYTOREQUEST"
+    ACCEPTAPPLICATION = "ACCEPTAPPLICATION"
+    REJECTAPPLICATION = "REJECTAPPLICATION"
+    RATESERVICE = "RATESERVICE"
+    UPLOADCERTIFICATION = "UPLOADCERTIFICATION"
+    VALIDATEPROFESSIONAL = "VALIDATEPROFESSIONAL"
+    REJECTPROFESSIONAL = "REJECTPROFESSIONAL"
+    SUSPENDUSER = "SUSPENDUSER"
+    ACTIVATEUSER = "ACTIVATEUSER"

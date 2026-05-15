@@ -1,0 +1,230 @@
+@startuml modelo_relacional
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam backgroundColor white
+skinparam linetype ortho
+skinparam ranksep 45
+skinparam nodesep 28
+title Modelo Relacional - SISWORK
+
+entity "users" as users {
+  * id : uuid <<PK>>
+  --
+  firstname : varchar(100)
+  lastname : varchar(100)
+  email : varchar(150) <<UNIQUE>>
+  passwordhash : varchar(255)
+  role : userroleenum
+  status : userstatusenum
+  isactive : boolean
+  createdat : timestamptz
+  updatedat : timestamptz
+}
+
+entity "useraddresses" as useraddresses {
+  * id : uuid <<PK>>
+  --
+  userid : uuid <<FK>>
+  department : varchar(100)
+  city : varchar(100)
+  zone : varchar(100)
+  address : varchar(255)
+  isprimary : boolean
+}
+
+entity "usertwofactor" as usertwofactor {
+  * id : uuid <<PK>>
+  --
+  userid : uuid <<FK, UNIQUE>>
+  isenabled : boolean
+  secret : varchar(255)
+}
+
+entity "professionalprofiles" as professionalprofiles {
+  * id : uuid <<PK>>
+  --
+  userid : uuid <<FK, UNIQUE>>
+  bio : text
+  yearsexperience : integer
+  mainzone : varchar(100)
+  verificationstatus : verificationstatusenum
+  averagerating : numeric(3,2)
+  ratingscount : integer
+  completedservicescount : integer
+}
+
+entity "specialties" as specialties {
+  * id : uuid <<PK>>
+  --
+  code : varchar(50) <<UNIQUE>>
+  name : varchar(100) <<UNIQUE>>
+  description : text
+  isactive : boolean
+}
+
+entity "professionalspecialties" as professionalspecialties {
+  * id : uuid <<PK>>
+  --
+  professionalprofileid : uuid <<FK>>
+  specialtyid : uuid <<FK>>
+  level : specialtylevelenum
+  yearsexperience : integer
+}
+
+entity "professionalavailabilities" as professionalavailabilities {
+  * id : uuid <<PK>>
+  --
+  professionalprofileid : uuid <<FK>>
+  weekday : weekdayenum
+  starttime : time
+  endtime : time
+}
+
+entity "professionalzones" as professionalzones {
+  * id : uuid <<PK>>
+  --
+  professionalprofileid : uuid <<FK>>
+  department : varchar(100)
+  city : varchar(100)
+  zone : varchar(100)
+}
+
+entity "certifications" as certifications {
+  * id : uuid <<PK>>
+  --
+  professionalprofileid : uuid <<FK>>
+  documenttype : documenttypeenum
+  title : varchar(200)
+  institution : varchar(150)
+  issueyear : integer
+  fileurl : text
+  isverified : boolean
+}
+
+entity "professionalvalidationqueue" as professionalvalidationqueue {
+  * id : uuid <<PK>>
+  --
+  professionalprofileid : uuid <<FK, UNIQUE>>
+  requestedbyuserid : uuid <<FK>>
+  assignedsupportuserid : uuid <<FK>>
+  status : verificationstatusenum
+}
+
+entity "servicerequests" as servicerequests {
+  * id : uuid <<PK>>
+  --
+  clientuserid : uuid <<FK>>
+  specialtyid : uuid <<FK>>
+  assignedprofessionalprofileid : uuid <<FK>>
+  title : varchar(200)
+  description : text
+  status : servicerequeststatusenum
+  minimumbudget : numeric(10,2)
+  maximumbudget : numeric(10,2)
+}
+
+entity "serviceapplications" as serviceapplications {
+  * id : uuid <<PK>>
+  --
+  servicerequestid : uuid <<FK>>
+  professionalprofileid : uuid <<FK>>
+  estimatedprice : numeric(10,2)
+  status : applicationstatusenum
+}
+
+entity "servicecontacts" as servicecontacts {
+  * id : uuid <<PK>>
+  --
+  servicerequestid : uuid <<FK>>
+  clientuserid : uuid <<FK>>
+  professionalprofileid : uuid <<FK>>
+  channel : contactchannelenum
+}
+
+entity "serviceratings" as serviceratings {
+  * id : uuid <<PK>>
+  --
+  servicerequestid : uuid <<FK, UNIQUE>>
+  clientuserid : uuid <<FK>>
+  professionalprofileid : uuid <<FK>>
+  score : integer
+  comment : text
+}
+
+entity "savedprofessionals" as savedprofessionals {
+  * id : uuid <<PK>>
+  --
+  userid : uuid <<FK>>
+  professionalprofileid : uuid <<FK>>
+}
+
+entity "searchhistory" as searchhistory {
+  * id : uuid <<PK>>
+  --
+  userid : uuid <<FK>>
+  specialtyid : uuid <<FK>>
+  searchterm : varchar(255)
+  zone : varchar(100)
+  minimumrating : numeric(2,1)
+}
+
+entity "administrativenotes" as administrativenotes {
+  * id : uuid <<PK>>
+  --
+  authoruserid : uuid <<FK>>
+  relatedentity : varchar(100)
+  relatedentityid : uuid
+  note : text
+}
+
+entity "administrativereports" as administrativereports {
+  * id : uuid <<PK>>
+  --
+  generatedbyuserid : uuid <<FK>>
+  reporttype : reporttypeenum
+  parametersjson : jsonb
+}
+
+entity "auditlogs" as auditlogs {
+  * id : uuid <<PK>>
+  --
+  actoruserid : uuid <<FK>>
+  action : auditactionenum
+  entity : varchar(100)
+  entityid : uuid
+}
+
+users ||--o{ useraddresses
+users ||--o| usertwofactor
+users ||--o| professionalprofiles
+users ||--o{ servicerequests
+users ||--o{ savedprofessionals
+users ||--o{ searchhistory
+users ||--o{ administrativenotes
+users ||--o{ administrativereports
+users ||--o{ auditlogs
+
+professionalprofiles ||--o{ professionalspecialties
+specialties ||--o{ professionalspecialties
+
+professionalprofiles ||--o{ professionalavailabilities
+professionalprofiles ||--o{ professionalzones
+professionalprofiles ||--o{ certifications
+professionalprofiles ||--o| professionalvalidationqueue
+
+specialties ||--o{ servicerequests
+servicerequests ||--o{ serviceapplications
+professionalprofiles ||--o{ serviceapplications
+
+servicerequests ||--o{ servicecontacts
+professionalprofiles ||--o{ servicecontacts
+
+servicerequests ||--o| serviceratings
+professionalprofiles ||--o{ serviceratings
+
+professionalprofiles ||--o{ savedprofessionals
+specialties ||--o{ searchhistory
+
+@enduml

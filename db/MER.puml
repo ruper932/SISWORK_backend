@@ -1,0 +1,202 @@
+@startuml mer
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam backgroundColor white
+skinparam linetype ortho
+skinparam ranksep 50
+skinparam nodesep 30
+title Modelo Entidad-Relacion (MER) - SISWORK
+
+entity users {
+  * id : uuid
+  --
+  firstname : varchar
+  lastname : varchar
+  email : varchar
+  role : enum
+  status : enum
+}
+
+entity useraddresses {
+  * id : uuid
+  --
+  userid : uuid
+  department : varchar
+  city : varchar
+  zone : varchar
+}
+
+entity usertwofactor {
+  * id : uuid
+  --
+  userid : uuid
+  isenabled : boolean
+}
+
+entity professionalprofiles {
+  * id : uuid
+  --
+  userid : uuid
+  bio : text
+  yearsexperience : int
+  verificationstatus : enum
+}
+
+entity specialties {
+  * id : uuid
+  --
+  code : varchar
+  name : varchar
+}
+
+entity professionalspecialties {
+  * id : uuid
+  --
+  professionalprofileid : uuid
+  specialtyid : uuid
+  level : enum
+}
+
+entity professionalavailabilities {
+  * id : uuid
+  --
+  professionalprofileid : uuid
+  weekday : enum
+  starttime : time
+  endtime : time
+}
+
+entity professionalzones {
+  * id : uuid
+  --
+  professionalprofileid : uuid
+  department : varchar
+  city : varchar
+  zone : varchar
+}
+
+entity certifications {
+  * id : uuid
+  --
+  professionalprofileid : uuid
+  documenttype : enum
+  title : varchar
+}
+
+entity professionalvalidationqueue {
+  * id : uuid
+  --
+  professionalprofileid : uuid
+  requestedbyuserid : uuid
+  assignedsupportuserid : uuid
+  status : enum
+}
+
+entity servicerequests {
+  * id : uuid
+  --
+  clientuserid : uuid
+  specialtyid : uuid
+  assignedprofessionalprofileid : uuid
+  title : varchar
+  status : enum
+}
+
+entity serviceapplications {
+  * id : uuid
+  --
+  servicerequestid : uuid
+  professionalprofileid : uuid
+  status : enum
+}
+
+entity servicecontacts {
+  * id : uuid
+  --
+  servicerequestid : uuid
+  clientuserid : uuid
+  professionalprofileid : uuid
+  channel : enum
+}
+
+entity serviceratings {
+  * id : uuid
+  --
+  servicerequestid : uuid
+  clientuserid : uuid
+  professionalprofileid : uuid
+  score : int
+}
+
+entity savedprofessionals {
+  * id : uuid
+  --
+  userid : uuid
+  professionalprofileid : uuid
+}
+
+entity searchhistory {
+  * id : uuid
+  --
+  userid : uuid
+  specialtyid : uuid
+  zone : varchar
+}
+
+entity administrativenotes {
+  * id : uuid
+  --
+  authoruserid : uuid
+  relatedentityid : uuid
+}
+
+entity administrativereports {
+  * id : uuid
+  --
+  generatedbyuserid : uuid
+  reporttype : enum
+}
+
+entity auditlogs {
+  * id : uuid
+  --
+  actoruserid : uuid
+  action : enum
+  entity : varchar
+}
+
+users ||--o{ useraddresses
+users ||--o| usertwofactor
+users ||--o| professionalprofiles
+users ||--o{ servicerequests
+users ||--o{ savedprofessionals
+users ||--o{ searchhistory
+users ||--o{ administrativenotes
+users ||--o{ administrativereports
+users ||--o{ auditlogs
+
+professionalprofiles ||--o{ professionalspecialties
+specialties ||--o{ professionalspecialties
+
+professionalprofiles ||--o{ professionalavailabilities
+professionalprofiles ||--o{ professionalzones
+professionalprofiles ||--o{ certifications
+professionalprofiles ||--o| professionalvalidationqueue
+
+specialties ||--o{ servicerequests
+
+servicerequests ||--o{ serviceapplications
+professionalprofiles ||--o{ serviceapplications
+
+servicerequests ||--o{ servicecontacts
+professionalprofiles ||--o{ servicecontacts
+
+servicerequests ||--o| serviceratings
+professionalprofiles ||--o{ serviceratings
+
+professionalprofiles ||--o{ savedprofessionals
+specialties ||--o{ searchhistory
+
+@enduml

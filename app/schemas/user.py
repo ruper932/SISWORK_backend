@@ -1,7 +1,9 @@
 from datetime import date, datetime
+from enum import Enum
+from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 class UserMeResponse(BaseModel):
@@ -96,3 +98,68 @@ class UserCreateResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+
+class UserRoleEnum(str, Enum):
+    CLIENT = "CLIENT"
+    PROFESSIONAL = "PROFESSIONAL"
+    ADMIN = "ADMIN"
+    SUPPORT = "SUPPORT"
+
+
+class UserStatusEnum(str, Enum):
+    ACTIVE = "ACTIVE"
+    SUSPENDED = "SUSPENDED"
+    BLOCKED = "BLOCKED"
+    DELETED = "DELETED"
+
+
+class UserGenderEnum(str, Enum):
+    MALE = "MALE"
+    FEMALE = "FEMALE"
+    OTHER = "OTHER"
+    PREFERNOTTOSAY = "PREFERNOTTOSAY"
+
+
+class UserBase(BaseModel):
+    firstname: str
+    lastname: str
+    email: EmailStr
+    phone: Optional[str] = None
+    whatsappnumber: Optional[str] = None
+    profilephotourl: Optional[str] = None
+    birthdate: Optional[date] = None
+    gender: Optional[UserGenderEnum] = None
+
+
+class UserCreate(UserBase):
+    password: str
+    role: UserRoleEnum = UserRoleEnum.CLIENT
+
+
+class UserUpdate(BaseModel):
+    firstname: Optional[str] = None
+    lastname: Optional[str] = None
+    phone: Optional[str] = None
+    whatsappnumber: Optional[str] = None
+    profilephotourl: Optional[str] = None
+    birthdate: Optional[date] = None
+    gender: Optional[UserGenderEnum] = None
+    status: Optional[UserStatusEnum] = None
+    isactive: Optional[bool] = None
+
+
+class UserRead(UserBase):
+    id: UUID
+    role: UserRoleEnum
+    status: UserStatusEnum
+    emailverifiedat: Optional[datetime] = None
+    lastloginat: Optional[datetime] = None
+    failedloginattempts: int
+    isactive: bool
+    createdat: datetime
+    updatedat: datetime
+    deletedat: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
