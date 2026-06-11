@@ -1,20 +1,19 @@
-from app.models.administrative_note import AdministrativeNote
-from app.models.administrative_report import AdministrativeReport
-from app.models.certification import Certification
-from app.models.professional_availability import ProfessionalAvailability
-from app.models.professional_profile import ProfessionalProfile
-from app.models.professional_specialty import ProfessionalSpecialty
-from app.models.professional_validation_queue import ProfessionalValidationQueue
-from app.models.professional_zone import ProfessionalZone
-from app.models.saved_professional import SavedProfessional
-from app.models.search_history import SearchHistory
-from app.models.service_application import ServiceApplication
-from app.models.service_contact import ServiceContact
-from app.models.service_rating import ServiceRating
-from app.models.service_request import ServiceRequest
-from app.models.specialty import Specialty
+from app.models.role import Role
 from app.models.user import User
-from app.models.user_address import UserAddress
-from app.models.user_two_factor import UserTwoFactor
+from app.models.user_role import UserRole
 
-__all__ = ["User", "UserTwoFactor"]
+from app.models.file import File
+
+from app.models.specialty import Specialty
+from app.models.professional_specialty import ProfessionalSpecialty
+
+from app.models.professional_profile import ProfessionalProfile
+from app.models.professional_availability import ProfessionalAvailability
+
+from app.models.verification_request import VerificationRequest
+from app.models.verification_document import VerificationDocument
+
+from app.models.request import Request
+from app.models.application import Application
+
+from app.models.review import Review

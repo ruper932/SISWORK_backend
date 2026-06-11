@@ -1,43 +1,14 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 
-class RegisterRequest(BaseModel):
-    first_name: str = Field(min_length=2, max_length=100)
-    last_name: str = Field(min_length=2, max_length=100)
-    email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
-
-
-class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
-
-
-class LoginTokenResponse(BaseModel):
-    access_token: str
+class LoginResponse(BaseModel):
+    requires_2fa: bool = False
+    access_token: str | None = None
     token_type: str = "bearer"
+    temp_token: str | None = None
+    message: str | None = None
 
 
-class LoginRequiresTwoFactorResponse(BaseModel):
-    requires_2fa: bool = True
-    challenge_token: str
-    token_type: str = "bearer"
-
-
-class VerifyTwoFactorRequest(BaseModel):
-    challenge_token: str
-    code: str = Field(min_length=6, max_length=6)
-
-
-class TwoFactorConfirmRequest(BaseModel):
-    code: str = Field(..., min_length=6, max_length=10)
-    
-class TwoFactorSetupResponse(BaseModel):
-    secret: str
-    otpauth_uri: str
-    backup_codes: list[str]
-    already_enabled: bool = False
-
-
-class TwoFactorDisableRequest(BaseModel):
-    password: str = Field(min_length=8, max_length=128)
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=8)

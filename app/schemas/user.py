@@ -1,165 +1,88 @@
-from datetime import date, datetime
-from enum import Enum
-from typing import Optional
-from uuid import UUID
+from datetime import UTC, date, datetime
 
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
-class UserMeResponse(BaseModel):
-    id: UUID
+class UserCreate(BaseModel):
+    ci: str
     first_name: str
     last_name: str
+    mother_last_name: str | None = None
+    birth_date: date
     email: EmailStr
-    role: str
-    status: str
-    email_verified_at: datetime | None
-    last_login_at: datetime | None
-
-
-class UserBase(BaseModel):
-    first_name: str
-    last_name: str
-    email: EmailStr
-    phone: str | None = None
-    whatsapp_number: str | None = None
-    profile_photo_url: str | None = None
-    birth_date: date | None = None
-    gender: str | None = None
-    role: str = "CLIENT"
-    status: str = "ACTIVE"
-    is_active: bool = True
-
-
-class UserCreateRequest(UserBase):
+    phone: str
     password: str
+    city: str | None = None
+    zone: str | None = None
+
+    @field_validator("birth_date")
+    @classmethod
+    def validate_age(cls, value: date):
+        today = datetime.now(UTC).date()
+        age = today.year - value.year - (
+            ((today.month, today.day) < (value.month, value.day))
+        )
+        if age < 18:
+            raise ValueError("User must be at least 18 years old")
+        return value
 
 
-class UserUpdateRequest(BaseModel):
-    first_name: str | None = None
-    last_name: str | None = None
-    email: EmailStr | None = None
-    phone: str | None = None
-    whatsapp_number: str | None = None
-    profile_photo_url: str | None = None
-    birth_date: date | None = None
-    gender: str | None = None
-    role: str | None = None
-    status: str | None = None
-    is_active: bool | None = None
-
-
-class UserListItemResponse(BaseModel):
-    id: UUID
-    first_name: str
-    last_name: str
-    email: EmailStr
-    phone: str | None
-    role: str
-    status: str
-    is_active: bool
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class UserDetailResponse(BaseModel):
-    id: UUID
-    first_name: str
-    last_name: str
-    email: EmailStr
-    phone: str | None
-    whatsapp_number: str | None
-    profile_photo_url: str | None
-    birth_date: date | None
-    gender: str | None
-    role: str
-    status: str
-    is_active: bool
-    email_verified_at: datetime | None
-    last_login_at: datetime | None
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class UserCreateResponse(BaseModel):
-    id: UUID
-    first_name: str
-    last_name: str
-    email: EmailStr
-    role: str
-    status: str
-    is_active: bool
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-
-class UserRoleEnum(str, Enum):
-    CLIENT = "CLIENT"
-    PROFESSIONAL = "PROFESSIONAL"
-    ADMIN = "ADMIN"
-    SUPPORT = "SUPPORT"
-
-
-class UserStatusEnum(str, Enum):
-    ACTIVE = "ACTIVE"
-    SUSPENDED = "SUSPENDED"
-    BLOCKED = "BLOCKED"
-    DELETED = "DELETED"
-
-
-class UserGenderEnum(str, Enum):
-    MALE = "MALE"
-    FEMALE = "FEMALE"
-    OTHER = "OTHER"
-    PREFERNOTTOSAY = "PREFERNOTTOSAY"
-
-
-class UserBase(BaseModel):
-    firstname: str
-    lastname: str
-    email: EmailStr
-    phone: Optional[str] = None
-    whatsappnumber: Optional[str] = None
-    profilephotourl: Optional[str] = None
-    birthdate: Optional[date] = None
-    gender: Optional[UserGenderEnum] = None
-
-
-class UserCreate(UserBase):
+class UserLogin(BaseModel):
+    ci: str
     password: str
-    role: UserRoleEnum = UserRoleEnum.CLIENT
 
 
 class UserUpdate(BaseModel):
-    firstname: Optional[str] = None
-    lastname: Optional[str] = None
-    phone: Optional[str] = None
-    whatsappnumber: Optional[str] = None
-    profilephotourl: Optional[str] = None
-    birthdate: Optional[date] = None
-    gender: Optional[UserGenderEnum] = None
-    status: Optional[UserStatusEnum] = None
-    isactive: Optional[bool] = None
+    first_name: str | None = None
+    last_name: str | None = None
+    mother_last_name: str | None = None
+    birth_date: date | None = None
+    email: EmailStr | None = None
+    phone: str | None = None
+    password: str | None = None
+    city: str | None = None
+    zone: str | None = None
+    whatsapp_enabled: bool | None = None
+    profile_photo_path: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    is_active: bool | None = None
+    is_verified: bool | None = None
+
+    @field_validator("birth_date")
+    @classmethod
+    def validate_age(cls, value: date | None):
+        if value is None:
+            return value
+        today = datetime.now(UTC).date()
+        age = today.year - value.year - (
+            ((today.month, today.day) < (value.month, value.day))
+        )
+        if age < 18:
+            raise ValueError("User must be at least 18 years old")
+        return value
 
 
-class UserRead(UserBase):
-    id: UUID
-    role: UserRoleEnum
-    status: UserStatusEnum
-    emailverifiedat: Optional[datetime] = None
-    lastloginat: Optional[datetime] = None
-    failedloginattempts: int
-    isactive: bool
-    createdat: datetime
-    updatedat: datetime
-    deletedat: Optional[datetime] = None
+class UserResponse(BaseModel):
+    ci: str
+    first_name: str
+    last_name: str
+    mother_last_name: str | None = None
+    birth_date: date
+    email: str
+    phone: str
+    city: str | None = None
+    zone: str | None = None
+    is_active: bool
+    is_verified: bool
+    roles: list[str] = Field(default_factory=list)
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True
+
+
+class UserListResponse(BaseModel):
+    items: list[UserResponse]
+    total: int
+    skip: int
+    limit: int

@@ -1,9 +1,96 @@
-# --- Python (Modelado y Digital Twins) ---
+# Byte-compiled / cache
 __pycache__/
 *.py[cod]
 *$py.class
-.venv/
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
 venv/
+.venv/
+env/
 ENV/
-.env
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Type checkers / linters
+.mypy_cache/
+.pyre/
+.ruff_cache/
+.pytype/
+
+# Jupyter
 .ipynb_checkpoints/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Environments / secrets
+.env
+.env.*
+!.env.example
+
+# IDE / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Alembic / local db artifacts if any
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# Uploaded/generated local files
+uploads/
+media/
+tmp/
+temp/
+
+# Optional: ignore generated diagrams/exports if they are not source-of-truth
+# db/*.svg
+# db/*.zip
+# db/*.sql
