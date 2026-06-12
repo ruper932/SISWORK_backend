@@ -5,7 +5,14 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional, List
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, computed_field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    computed_field,
+    model_validator,
+)
 
 from app.db.enums import RequestStatusEnum, UrgencyLevelEnum
 
@@ -14,42 +21,54 @@ class RequestCreate(BaseModel):
     specialty_id: uuid.UUID
     title: str = Field(min_length=3, max_length=255)
     description: str = Field(min_length=10)
-    budget: Optional[Decimal] = None
-    proposed_final_price: Optional[Decimal] = None
+    budget: Optional[Decimal] = Field(default=None, ge=0)
+    proposed_final_price: Optional[Decimal] = Field(default=None, ge=0)
     scheduled_date: Optional[datetime] = None
     city: str = Field(min_length=2, max_length=100)
     zone: Optional[str] = Field(default=None, max_length=100)
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: Optional[float] = Field(default=None, ge=-90, le=90)
+    longitude: Optional[float] = Field(default=None, ge=-180, le=180)
     urgency: UrgencyLevelEnum = UrgencyLevelEnum.MEDIUM
 
     @field_validator("budget", "proposed_final_price")
     @classmethod
-    def validate_amounts(cls, v):
+    def validate_amounts(cls, v: Optional[Decimal]):
         if v is not None and v < 0:
             raise ValueError("Amount must be positive")
         return v
+
+    @model_validator(mode="after")
+    def validate_coordinates(self):
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValueError("Latitude and longitude must be provided together")
+        return self
 
 
 class RequestUpdate(BaseModel):
     specialty_id: Optional[uuid.UUID] = None
     title: Optional[str] = Field(default=None, min_length=3, max_length=255)
     description: Optional[str] = Field(default=None, min_length=10)
-    budget: Optional[Decimal] = None
-    proposed_final_price: Optional[Decimal] = None
+    budget: Optional[Decimal] = Field(default=None, ge=0)
+    proposed_final_price: Optional[Decimal] = Field(default=None, ge=0)
     scheduled_date: Optional[datetime] = None
     city: Optional[str] = Field(default=None, min_length=2, max_length=100)
     zone: Optional[str] = Field(default=None, max_length=100)
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: Optional[float] = Field(default=None, ge=-90, le=90)
+    longitude: Optional[float] = Field(default=None, ge=-180, le=180)
     urgency: Optional[UrgencyLevelEnum] = None
 
     @field_validator("budget", "proposed_final_price")
     @classmethod
-    def validate_amounts(cls, v):
+    def validate_amounts(cls, v: Optional[Decimal]):
         if v is not None and v < 0:
             raise ValueError("Amount must be positive")
         return v
+
+    @model_validator(mode="after")
+    def validate_coordinates(self):
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValueError("Latitude and longitude must be provided together")
+        return self
 
 
 class RequestCancel(BaseModel):

@@ -24,6 +24,26 @@ from app.schemas.request import RequestCreate, RequestUpdate
 
 class RequestService:
     @staticmethod
+    def _validate_coordinates(latitude: float | None, longitude: float | None) -> None:
+        if (latitude is None) != (longitude is None):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Latitude and longitude must be provided together",
+            )
+
+        if latitude is not None and not (-90 <= latitude <= 90):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Latitude must be between -90 and 90",
+            )
+
+        if longitude is not None and not (-180 <= longitude <= 180):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Longitude must be between -180 and 180",
+            )
+
+    @staticmethod
     def create_request(db: Session, current_user: User, request_data: RequestCreate) -> Request:
         user_roles = RoleRepository.get_user_roles(db, current_user.ci)
         if RoleEnum.CLIENT.value not in user_roles:
@@ -38,6 +58,11 @@ class RequestService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Specialty not found or inactive",
             )
+
+        RequestService._validate_coordinates(
+            request_data.latitude,
+            request_data.longitude,
+        )
 
         request = Request(
             client_ci=current_user.ci,
@@ -186,6 +211,11 @@ class RequestService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Only open requests can be updated",
             )
+
+        next_latitude = request_data.latitude if request_data.latitude is not None else request.latitude
+        next_longitude = request_data.longitude if request_data.longitude is not None else request.longitude
+
+        RequestService._validate_coordinates(next_latitude, next_longitude)
 
         if request_data.specialty_id is not None:
             specialty = db.get(Specialty, request_data.specialty_id)

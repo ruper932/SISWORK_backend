@@ -12,7 +12,7 @@ from app.models.professional_availability import ProfessionalAvailability
 
 from app.models.verification_request import VerificationRequest
 from app.models.verification_document import VerificationDocument
-
+from app.models.professional_request import ProfessionalRequest
 from app.models.request import Request
 from app.models.application import Application
 

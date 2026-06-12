@@ -11,6 +11,8 @@ from app.api.v1.requests import router as requests_router
 from app.api.v1.applications import router as applications_router
 from app.api.v1.reviews import router as reviews_router
 from app.api.v1.specialties import router as specialties_router
+from app.api.v1.professional_requests import router as professional_requests_router
+
 
 app = FastAPI(
     title="SISWORK API",
@@ -37,3 +39,4 @@ app.include_router(requests_router)
 app.include_router(applications_router)
 app.include_router(reviews_router)
 app.include_router(specialties_router)
+app.include_router(professional_requests_router)

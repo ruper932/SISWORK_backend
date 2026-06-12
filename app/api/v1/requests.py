@@ -18,7 +18,6 @@ from app.schemas.request import (
 )
 from app.services.request_service import RequestService
 
-
 router = APIRouter(
     prefix="/requests",
     tags=["Requests"],
@@ -80,33 +79,6 @@ def list_my_requests(
     return RequestService.list_my_requests(db, current_user, skip=skip, limit=limit)
 
 
-@router.get(
-    "/{request_id}",
-    response_model=RequestResponse,
-)
-def get_request_detail(
-    request_id: uuid.UUID,
-    db: Session = Depends(get_db),
-):
-    request = RequestService.get_request_by_id(db, request_id)
-    if request is None:
-        raise HTTPException(status_code=404, detail="Request not found")
-    return request
-
-
-@router.put(
-    "/{request_id}",
-    response_model=RequestResponse,
-)
-def update_request(
-    request_id: uuid.UUID,
-    request_data: RequestUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(["CLIENT"])),
-):
-    return RequestService.update_request(db, current_user, request_id, request_data)
-
-
 @router.post(
     "/{request_id}/cancel",
     response_model=RequestResponse,
@@ -143,3 +115,30 @@ def complete_request(
     current_user: User = Depends(get_current_user),
 ):
     return RequestService.complete_request(db, current_user, request_id)
+
+
+@router.get(
+    "/{request_id}",
+    response_model=RequestResponse,
+)
+def get_request_detail(
+    request_id: uuid.UUID,
+    db: Session = Depends(get_db),
+):
+    request = RequestService.get_request_by_id(db, request_id)
+    if request is None:
+        raise HTTPException(status_code=404, detail="Request not found")
+    return request
+
+
+@router.put(
+    "/{request_id}",
+    response_model=RequestResponse,
+)
+def update_request(
+    request_id: uuid.UUID,
+    request_data: RequestUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(["CLIENT"])),
+):
+    return RequestService.update_request(db, current_user, request_id, request_data)
