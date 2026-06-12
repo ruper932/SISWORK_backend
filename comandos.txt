@@ -1,0 +1,9 @@
+docker-compose build --no-cache siswork_backend
+
+docker-compose up -d
+
+docker-compose exec siswork_backend alembic upgrade head
+
+docker exec -it siswork_postgres_prod psql -U ruper -d siswork_api
+
+docker-compose exec siswork_backend python -m scripts.seed

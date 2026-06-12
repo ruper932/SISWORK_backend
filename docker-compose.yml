@@ -1,0 +1,27 @@
+services:
+  siswork_postgres:
+    image: postgres:15-alpine
+    container_name: siswork_postgres_prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ruper
+      POSTGRES_PASSWORD: demons312es
+      POSTGRES_DB: siswork_api
+    volumes:
+      - siswork_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  siswork_backend:
+    build: .
+    container_name: siswork_backend_prod
+    restart: unless-stopped
+    depends_on:
+      - siswork_postgres
+    env_file:
+      - .env
+    ports:
+      - "8001:8000"
+
+volumes:
+  siswork_postgres_data:
