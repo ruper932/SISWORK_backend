@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional, List
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, computed_field
 
 from app.db.enums import RequestStatusEnum, UrgencyLevelEnum
 
@@ -92,6 +92,15 @@ class RequestResponse(BaseModel):
     cancellation_reason: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+
+    @computed_field
+    @property
+    def can_review(self) -> bool:
+        return (
+            self.status == RequestStatusEnum.COMPLETED
+            and self.is_review_enabled
+            and self.assigned_professional_profile_id is not None
+        )
 
 
 class RequestListResponse(BaseModel):

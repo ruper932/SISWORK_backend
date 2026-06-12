@@ -5,6 +5,7 @@ from sqlalchemy import (
     Text,
     Integer,
     ForeignKey,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -40,12 +41,14 @@ class Review(
         String,
         ForeignKey("users.ci"),
         nullable=False,
+        index=True,
     )
 
     reviewed_user_ci: Mapped[str] = mapped_column(
         String,
         ForeignKey("users.ci"),
         nullable=False,
+        index=True,
     )
 
     rating: Mapped[int] = mapped_column(
@@ -71,4 +74,12 @@ class Review(
     reviewed_user = relationship(
         "User",
         foreign_keys=[reviewed_user_ci],
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "application_id",
+            "reviewer_ci",
+            name="uq_review_application_reviewer",
+        ),
     )

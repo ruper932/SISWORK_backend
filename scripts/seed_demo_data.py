@@ -638,7 +638,7 @@ def ensure_request(
         request.budget = budget
         request.urgency = urgency
         request.scheduled_date = scheduled_date
-        request.status = RequestStatusEnum.PENDING
+        request.status = RequestStatusEnum.OPEN
         request.assigned_professional_profile_id = None
         request.proposed_final_price = None
         request.is_review_enabled = False
@@ -660,7 +660,7 @@ def ensure_request(
         latitude=latitude,
         longitude=longitude,
         urgency=urgency,
-        status=RequestStatusEnum.PENDING,
+        status=RequestStatusEnum.OPEN,
         is_review_enabled=False,
         cancellation_reason=None,
     )
@@ -885,9 +885,9 @@ def seed_applications_and_state_flow(
     applications: list[Application] = []
 
     target_states = {
-        6: RequestStatusEnum.ASSIGNED,
-        7: RequestStatusEnum.ASSIGNED,
-        8: RequestStatusEnum.ASSIGNED,
+        6: RequestStatusEnum.OPEN,
+        7: RequestStatusEnum.OPEN,
+        8: RequestStatusEnum.OPEN,
         9: RequestStatusEnum.IN_PROGRESS,
         10: RequestStatusEnum.IN_PROGRESS,
         11: RequestStatusEnum.IN_PROGRESS,
@@ -953,8 +953,8 @@ def seed_applications_and_state_flow(
         fresh_request.assigned_professional_profile_id = accepted.professional_profile_id
         fresh_request.proposed_final_price = accepted.proposed_price
 
-        if target_status == RequestStatusEnum.ASSIGNED:
-            fresh_request.status = RequestStatusEnum.ASSIGNED
+        if target_status == RequestStatusEnum.OPEN:
+            fresh_request.status = RequestStatusEnum.OPEN
             fresh_request.is_review_enabled = False
         elif target_status == RequestStatusEnum.IN_PROGRESS:
             fresh_request.status = RequestStatusEnum.IN_PROGRESS

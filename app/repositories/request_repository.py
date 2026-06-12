@@ -191,6 +191,63 @@ class RequestRepository:
         return db.scalar(stmt) or 0
 
     @staticmethod
+    def list_by_professional_profile(
+        db: Session,
+        professional_profile_id: uuid.UUID,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> List[Request]:
+        stmt = (
+            select(Request)
+            .options(
+                selectinload(Request.client),
+                selectinload(Request.specialty),
+                selectinload(Request.assigned_professional),
+                selectinload(Request.applications),
+            )
+            .where(Request.assigned_professional_profile_id == professional_profile_id)
+            .order_by(Request.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+        )
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
+    def count_by_professional_profile(
+        db: Session,
+        professional_profile_id: uuid.UUID,
+    ) -> int:
+        stmt = select(func.count(Request.id)).where(
+            Request.assigned_professional_profile_id == professional_profile_id
+        )
+        return db.scalar(stmt) or 0
+
+    @staticmethod
+    def list_all(
+        db: Session,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> List[Request]:
+        stmt = (
+            select(Request)
+            .options(
+                selectinload(Request.client),
+                selectinload(Request.specialty),
+                selectinload(Request.assigned_professional),
+                selectinload(Request.applications),
+            )
+            .order_by(Request.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+        )
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
+    def count_all(db: Session) -> int:
+        stmt = select(func.count(Request.id))
+        return db.scalar(stmt) or 0
+
+    @staticmethod
     def exists_by_id(db: Session, request_id: uuid.UUID) -> bool:
         stmt = select(Request.id).where(Request.id == request_id)
         return db.scalar(stmt) is not None

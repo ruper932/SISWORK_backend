@@ -13,6 +13,7 @@ from app.db.enums import (
     UrgencyLevelEnum,
 )
 from app.models.application import Application
+from app.models.professional_profile import ProfessionalProfile
 from app.models.request import Request
 from app.models.specialty import Specialty
 from app.models.user import User
@@ -109,14 +110,62 @@ class RequestService:
 
     @staticmethod
     def list_my_requests(db: Session, current_user: User, skip: int = 0, limit: int = 50):
-        items = RequestRepository.list_by_client(db, current_user.ci, skip=skip, limit=limit)
-        total = RequestRepository.count_by_client(db, current_user.ci)
-        return {
-            "items": items,
-            "total": total,
-            "skip": skip,
-            "limit": limit,
-        }
+        user_roles = RoleRepository.get_user_roles(db, current_user.ci)
+
+        if RoleEnum.SUPERADMIN.value in user_roles or RoleEnum.ADMIN.value in user_roles:
+            items = RequestRepository.list_all(db, skip=skip, limit=limit)
+            total = RequestRepository.count_all(db)
+            return {
+                "items": items,
+                "total": total,
+                "skip": skip,
+                "limit": limit,
+            }
+
+        if RoleEnum.CLIENT.value in user_roles:
+            items = RequestRepository.list_by_client(db, current_user.ci, skip=skip, limit=limit)
+            total = RequestRepository.count_by_client(db, current_user.ci)
+            return {
+                "items": items,
+                "total": total,
+                "skip": skip,
+                "limit": limit,
+            }
+
+        if RoleEnum.PROFESSIONAL.value in user_roles:
+            professional_profile = db.scalar(
+                select(ProfessionalProfile).where(ProfessionalProfile.user_ci == current_user.ci)
+            )
+
+            if professional_profile is None:
+                return {
+                    "items": [],
+                    "total": 0,
+                    "skip": skip,
+                    "limit": limit,
+                }
+
+            items = RequestRepository.list_by_professional_profile(
+                db,
+                professional_profile.id,
+                skip=skip,
+                limit=limit,
+            )
+            total = RequestRepository.count_by_professional_profile(
+                db,
+                professional_profile.id,
+            )
+            return {
+                "items": items,
+                "total": total,
+                "skip": skip,
+                "limit": limit,
+            }
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Role not allowed to list requests",
+        )
 
     @staticmethod
     def update_request(

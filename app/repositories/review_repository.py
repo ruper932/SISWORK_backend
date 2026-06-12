@@ -6,6 +6,7 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from app.models.application import Application
 from app.models.review import Review
 
 
@@ -22,7 +23,7 @@ class ReviewRepository:
         stmt = (
             select(Review)
             .options(
-                selectinload(Review.application),
+                selectinload(Review.application).selectinload(Application.professional_profile),
                 selectinload(Review.reviewer),
                 selectinload(Review.reviewed_user),
             )
@@ -55,6 +56,23 @@ class ReviewRepository:
                 selectinload(Review.reviewed_user),
             )
             .where(Review.reviewed_user_ci == reviewed_user_ci)
+            .order_by(Review.created_at.desc())
+        )
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
+    def list_by_reviewer(
+        db: Session,
+        reviewer_ci: str,
+    ) -> List[Review]:
+        stmt = (
+            select(Review)
+            .options(
+                selectinload(Review.application),
+                selectinload(Review.reviewer),
+                selectinload(Review.reviewed_user),
+            )
+            .where(Review.reviewer_ci == reviewer_ci)
             .order_by(Review.created_at.desc())
         )
         return list(db.scalars(stmt).all())

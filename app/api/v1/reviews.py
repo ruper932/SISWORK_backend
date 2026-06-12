@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.api.deps.auth import get_current_user
@@ -11,6 +11,7 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.review import ReviewCreate, ReviewResponse
 from app.services.review_service import ReviewService
+
 
 router = APIRouter(
     prefix="/reviews",
@@ -21,17 +22,14 @@ router = APIRouter(
 @router.post(
     "",
     response_model=ReviewResponse,
-    status_code=status.HTTP_201_CREATED,
+    status_code=201,
 )
 def create_review(
     review_data: ReviewCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    try:
-        return ReviewService.create_review(db, current_user, review_data)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    return ReviewService.create_review(db, current_user, review_data)
 
 
 @router.get(
@@ -42,10 +40,7 @@ def list_reviews_for_me(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    try:
-        return ReviewService.list_reviews_for_me(db, current_user)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    return ReviewService.list_reviews_for_me(db, current_user)
 
 
 @router.get(
@@ -57,7 +52,4 @@ def get_review_detail(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    try:
-        return ReviewService.get_review_by_id(db, review_id)
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    return ReviewService.get_review_by_id(db, review_id)
