@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import User
+from app.repositories.role_repository import RoleRepository
 from app.repositories.user_repository import UserRepository
 from app.schemas.user import UserCreate
 
@@ -40,7 +41,12 @@ class AuthService:
             failed_login_attempts=0,
         )
 
-        return UserRepository.create(db, user)
+        created_user = UserRepository.create(db, user)
+        RoleRepository.assign_role_to_user(db, created_user.ci, "client")
+        db.commit()
+        db.refresh(created_user)
+
+        return created_user
 
     @staticmethod
     def login(db: Session, identifier: str, password: str) -> dict | None:

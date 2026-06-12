@@ -1,4 +1,4 @@
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from app.models.role import Role
@@ -30,8 +30,10 @@ class RoleRepository:
         db: Session,
         role_name: str,
     ):
+        normalized_name = role_name.strip().lower()
+
         stmt = select(Role).where(
-            Role.name == role_name,
+            func.lower(Role.name) == normalized_name,
         )
 
         return db.scalar(stmt)
