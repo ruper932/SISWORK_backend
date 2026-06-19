@@ -140,3 +140,20 @@ class User(
         uselist=False,
         cascade="all, delete-orphan",
     )
+    
+    totp_secret: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+    )
+
+    totp_enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+
+    totp_pending_verification: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )

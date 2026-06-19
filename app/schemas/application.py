@@ -3,11 +3,12 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional, List
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.db.enums import ApplicationStatusEnum
+from app.schemas.professional import ProfessionalPublicResponse
 
 
 class ApplicationCreate(BaseModel):
@@ -36,8 +37,9 @@ class ApplicationResponse(BaseModel):
     status: ApplicationStatusEnum
     created_at: datetime
     updated_at: datetime
+    professional_profile: ProfessionalPublicResponse
 
 
 class ApplicationListResponse(BaseModel):
-    items: List[ApplicationResponse]
+    items: list[ApplicationResponse]
     total: int

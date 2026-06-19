@@ -49,7 +49,14 @@ def decode_token(token: str):
         return payload
     except JWTError:
         return None
+def create_temp_token(subject: str) -> str:
+    """Token temporal de 5 minutos para el proceso de 2FA."""
+    return create_access_token(
+        subject=subject,
+        expires_delta=timedelta(minutes=5)
+    )
 
+createtemptoken = create_temp_token
 
 # Compatibilidad con imports viejos
 hashpassword = hash_password
